@@ -1,11 +1,13 @@
 import type { NodeType } from '../../types/workflow';
+import { Play, ClipboardList, ShieldCheck, Zap, Flag, MousePointer2 } from 'lucide-react';
+import { cn } from '../../utils/cn';
 
-const nodeItems: { type: NodeType; label: string; description: string }[] = [
-  { type: 'start', label: 'Start Node', description: 'Workflow entry point' },
-  { type: 'task', label: 'Task Node', description: 'Human task / action' },
-  { type: 'approval', label: 'Approval Node', description: 'Manager or HR review' },
-  { type: 'automated', label: 'Automated Step', description: 'System-triggered action' },
-  { type: 'end', label: 'End Node', description: 'Workflow completion' },
+const nodeItems: { type: NodeType; label: string; description: string; icon: any; color: string }[] = [
+  { type: 'start', label: 'Start Node', description: 'Entry point', icon: Play, color: 'emerald' },
+  { type: 'task', label: 'Task Node', description: 'Human task', icon: ClipboardList, color: 'indigo' },
+  { type: 'approval', label: 'Approval Node', description: 'Review step', icon: ShieldCheck, color: 'amber' },
+  { type: 'automated', label: 'Automated Step', description: 'System action', icon: Zap, color: 'purple' },
+  { type: 'end', label: 'End Node', description: 'Completion', icon: Flag, color: 'rose' },
 ];
 
 type Props = {
@@ -14,27 +16,53 @@ type Props = {
 
 export const NodePalette = ({ onAddNode }: Props) => {
   return (
-    <aside className="flex h-full w-[280px] flex-col border-r border-slate-200 bg-white p-4">
-      <div className="mb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-600">Tredence</p>
-        <h1 className="mt-2 text-xl font-semibold text-slate-900">HR Workflow Designer</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
-          Add custom nodes, configure the selected step, and test the workflow in the sandbox.
+    <aside className="flex h-full w-[300px] flex-col border-r border-slate-200 bg-white/80 backdrop-blur-md p-6">
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="h-8 w-8 rounded-xl bg-indigo-600 flex items-center justify-center">
+            <Zap className="text-white" size={18} fill="currentColor" />
+          </div>
+          <p className="text-sm font-bold tracking-tight text-slate-900">Tredence AI</p>
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Workflow Designer</h1>
+        <p className="mt-3 text-sm leading-relaxed text-slate-500">
+          Build enterprise-grade HR automation workflows with a drag-and-drop experience.
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="flex-1 space-y-3 overflow-y-auto pr-1">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4 px-1">Node Components</p>
         {nodeItems.map((item) => (
           <button
             key={item.type}
             onClick={() => onAddNode(item.type)}
-            className="w-full rounded-2xl border border-slate-200 p-4 text-left transition hover:border-indigo-300 hover:bg-indigo-50"
+            className="group relative w-full overflow-hidden rounded-2xl border border-slate-200 p-4 text-left transition-all duration-300 hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-500/10 active:scale-[0.98]"
           >
-            <div className="text-sm font-semibold text-slate-800">{item.label}</div>
-            <div className="mt-1 text-xs leading-5 text-slate-500">{item.description}</div>
+            <div className="flex items-center gap-4">
+              <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors duration-300", `bg-${item.color}-50 group-hover:bg-${item.color}-100`, `text-${item.color}-600`)}>
+                <item.icon size={20} strokeWidth={2.5} />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-slate-800">{item.label}</div>
+                <div className="mt-0.5 text-xs font-medium text-slate-400">{item.description}</div>
+              </div>
+            </div>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+              <MousePointer2 size={14} className="text-indigo-400" />
+            </div>
           </button>
         ))}
+      </div>
+
+      <div className="mt-auto pt-6 border-t border-slate-100">
+        <div className="rounded-2xl bg-slate-50 p-4">
+          <p className="text-xs font-bold text-slate-900 mb-1">Recruiter Demo Mode</p>
+          <p className="text-[11px] text-slate-500 leading-relaxed">
+            Simulation sandbox is active. All interactions are logged in real-time.
+          </p>
+        </div>
       </div>
     </aside>
   );
 };
+
