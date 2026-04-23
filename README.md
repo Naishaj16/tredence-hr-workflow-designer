@@ -1,73 +1,115 @@
-# React + TypeScript + Vite
+# HR Workflow Designer – Tredence Case Study
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A recruiter-ready submission for the **Full Stack Engineering Intern (AI Agentic Platforms)** case study shared by Tredence. The brief asked for a mini HR Workflow Designer that lets an HR admin visually create, configure, and simulate workflows using **React + React Flow**. This project directly targets those requirements, including custom nodes, editable node forms, a mock API layer, and a workflow sandbox. Based on the uploaded brief and case-study requirements. fileciteturn0file0
 
-Currently, two official plugins are available:
+## What is implemented
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 1. Workflow Canvas
+- React Flow canvas with multiple node types
+- Start, Task, Approval, Automated, and End nodes
+- Edge creation and deletion support through React Flow controls
+- Node selection and editing
+- Basic workflow validation rules
 
-## React Compiler
+### 2. Node Configuration Panel
+Each selected node opens a configurable side panel.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Start Node**
+- Start title
+- Optional metadata key-value pairs
 
-## Expanding the ESLint configuration
+**Task Node**
+- Title
+- Description
+- Assignee
+- Due date
+- Custom key-value fields
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+**Approval Node**
+- Title
+- Approver role
+- Auto-approve threshold
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**Automated Step Node**
+- Title
+- Action selection from a mock API list
+- Dynamic action parameter fields
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+**End Node**
+- End message
+- Summary toggle
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 3. Mock API Layer
+- `GET /automations` equivalent local mock
+- `POST /simulate` equivalent local mock
+- Async abstraction included in `src/services/mockApi.ts`
+
+### 4. Workflow Test Sandbox
+- Serializes current workflow graph
+- Runs validation
+- Returns step-by-step execution log
+- Surfaces validation errors for missing flow integrity
+
+## Tech Stack
+- React
+- TypeScript
+- Vite
+- React Flow
+- Tailwind CSS
+
+## Architecture Approach
+The solution is intentionally structured for extensibility:
+
+```bash
+src/
+├── components/
+│   ├── canvas/
+│   ├── forms/
+│   ├── nodes/
+│   ├── sidebar/
+│   └── simulation/
+├── hooks/
+├── services/
+├── types/
+└── utils/
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Design decisions
+- Clear separation between canvas, node form, simulation, and API logic
+- Strong typing for node data models
+- Reusable key-value field array for extensible forms
+- Validation logic separated into utility functions
+- Local mock API kept independent from UI components
+- Easy to add more node types in the future
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## How to run
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
+
+## Suggested demo flow
+1. Start Node → Task Node → Approval Node → Automated Step → End Node
+2. Select each node and configure its fields
+3. Choose an automated action such as “Send Email” or “Generate Document”
+4. Click **Run Simulation**
+5. Show validation logs or successful execution steps
+
+## What I prioritized
+- Working functionality over pixel-perfect styling
+- Clean, modular React architecture
+- Dynamic and type-safe node forms
+- Easy recruiter review and quick local setup
+
+## What I would add with more time
+- Undo / Redo
+- Import / Export workflow JSON
+- Better drag-and-drop sidebar experience
+- Node-level validation indicators
+- Auto-layout
+- Persistent backend storage
+- Playwright / Cypress tests
+
+## Submission note
+This prototype was built to match the case study’s core evaluation criteria: React Flow proficiency, modular React architecture, dynamic form handling, mock API integration, scalability, and communication through a clear README. The original brief also emphasized architectural clarity over pixel-perfect UI, which guided the implementation choices here. fileciteturn0file0

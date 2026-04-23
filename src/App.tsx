@@ -1,122 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useState } from 'react';
+import { ReactFlowProvider } from 'reactflow';
+import { WorkflowCanvas } from './components/canvas/WorkflowCanvas';
+import { NodeFormPanel } from './components/forms/NodeFormPanel';
+import { NodePalette } from './components/sidebar/NodePalette';
+import { SimulationPanel } from './components/simulation/SimulationPanel';
+import { useWorkflow } from './hooks/useWorkflow';
+import { getAutomations, simulateWorkflow } from './services/mockApi';
+import type { AutomationAction, SimulationResult } from './types/workflow';
 
-function App() {
-  const [count, setCount] = useState(0)
+const AppShell = () => {
+  const workflow = useWorkflow();
+  const [actions, setActions] = useState<AutomationAction[]>([]);
+  const [simulationResult, setSimulationResult] = useState<SimulationResult | null>(null);
+  const [isSimulating, setIsSimulating] = useState(false);
+
+  useEffect(() => {
+    getAutomations().then(setActions);
+  }, []);
+
+  const runSimulation = async () => {
+    setIsSimulating(true);
+    const result = await simulateWorkflow({ nodes: workflow.nodes, edges: workflow.edges });
+    setSimulationResult(result);
+    setIsSimulating(false);
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="flex h-screen bg-slate-100 text-slate-900">
+      <NodePalette onAddNode={workflow.addNode} />
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      <main className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-h-0 flex-1">
+          <WorkflowCanvas
+            nodes={workflow.nodes}
+            edges={workflow.edges}
+            onNodesChange={workflow.onNodesChange}
+            onEdgesChange={workflow.onEdgesChange}
+            onConnect={workflow.onConnect}
+            onNodeClick={workflow.setSelectedNodeId}
+          />
+          <NodeFormPanel
+            node={workflow.selectedNode}
+            automationActions={actions}
+            onChangeNode={workflow.updateNodeData}
+            onDeleteNode={workflow.deleteSelectedNode}
+          />
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <SimulationPanel result={simulationResult} isLoading={isSimulating} onSimulate={runSimulation} />
+      </main>
+    </div>
+  );
+};
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+export default function App() {
+  return (
+    <ReactFlowProvider>
+      <AppShell />
+    </ReactFlowProvider>
+  );
 }
-
-export default App
