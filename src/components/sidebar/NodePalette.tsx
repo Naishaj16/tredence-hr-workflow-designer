@@ -54,14 +54,7 @@ export const NodePalette = ({ onAddNode }: Props) => {
         ))}
       </div>
 
-      <div className="mt-auto pt-6 border-t border-slate-100">
-        <div className="rounded-2xl bg-slate-50 p-4">
-          <p className="text-xs font-bold text-slate-900 mb-1">Recruiter Demo Mode</p>
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            Simulation sandbox is active. All interactions are logged in real-time.
-          </p>
-        </div>
-      </div>
+
     </aside>
   );
 };
