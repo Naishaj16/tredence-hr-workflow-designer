@@ -138,22 +138,25 @@ export const NodeFormPanel = ({ node, automationActions, onChangeNode, onDeleteN
                 ))}
               </select>
             </div>
-            {Object.keys(node.data.actionParams).map((param) => (
+            {node.data.type === 'automated' && Object.keys(node.data.actionParams).map((param) => (
               <div key={param}>
                 <label className="text-sm font-medium capitalize text-slate-700">{param}</label>
                 <input
-                  value={node.data.actionParams[param] ?? ''}
+                  value={(node.data as any).actionParams[param] ?? ''}
                   onChange={(e) =>
-                    update((current) => ({
-                      ...current,
-                      data: {
-                        ...current.data,
-                        actionParams: {
-                          ...current.data.actionParams,
-                          [param]: e.target.value,
+                    update((current) => {
+                      if (current.data.type !== 'automated') return current;
+                      return {
+                        ...current,
+                        data: {
+                          ...current.data,
+                          actionParams: {
+                            ...current.data.actionParams,
+                            [param]: e.target.value,
+                          },
                         },
-                      } as typeof current.data,
-                    }))
+                      };
+                    })
                   }
                   className={inputClassName}
                 />
